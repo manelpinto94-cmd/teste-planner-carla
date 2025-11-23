@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner Semanal 2025 - Notion Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #37352f;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header com efeito glassmorphism */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Container horizontal dos dias - scroll lateral */
+        .week-container {
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 20px 10px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch; /* Para iOS */
+        }
+
+        .week-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .week-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        /* Card de cada dia - estilo Notion */
+        .day-card {
+            min-width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .day-card h3 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        /* Tarefas como cards individuais */
+        .task-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-item:hover {
+            background: #e8f2ff;
+            transform: translateX(5px);
+        }
+
+        .task-item.completed {
+            opacity: 0.5;
+            text-decoration: line-through;
+            border-left-color: #28a745;
+        }
+
+        /* Botão de adicionar tarefa */
+        .add-task-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        /* Modal para adicionar tarefa */
+        .task-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .task-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        /* Metas e Notas */
+        .goals-section, .notes-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .notes-section textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+        }
+
+        /* Botões de ação */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .action-buttons button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .day-card {
+                min-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📅 Planner Semanal 2025</h1>
+            <p>Organize sua semana com estilo</p>
+        </div>
+
+        <!-- Metas da Semana -->
+        <div class="goals-section">
+            <h2>🎯 Metas da Semana</h2>
+            <div class="goal-item">□ Concluir projeto principal</div>
+            <button class="add-task-btn" style="background: #f5576c;" onclick="addGoal()">+ Adicionar Meta</button>
+        </div>
+
+        <!-- Dias da Semana (SCROLL HORIZONTAL) -->
+        <div class="week-container">
+            <!-- Segunda -->
+            <div class="day-card">
+                <h3>Segunda - 20/11</h3>
+                <div class="task-list" data-day="monday">
+                    <div class="task-item">☐ Revisar e-mails</div>
+                    <div class="task-item">☐ Planejar sprint</div>
+                </div>
+                <button class="add-task-btn" onclick="addTask('monday')">+ Adicionar Tarefa</button>
+            </div>
+
+            <!-- Terça -->
+            <div class="day-card">
+                <h3>Terça - 21/11</h3>
+                <div class="task-list" data-day="tuesday">
+                    <div class="task-item">☐ Desenvolver feature X</div>
+                </div>
+                <button class="add-task-btn" onclick="addTask('tuesday')">+ Adicionar Tarefa</button>
+            </div>
+
+            <!-- Quarta -->
+            <div class="day-card">
+                <h3>Quarta - 22/11</h3>
+                <div class="task-list" data-day="wednesday">
+                    <div class="task-item">☐ Reunião com cliente 14h</div>
+                </div>
+                <button class="add-task-btn" onclick="addTask('wednesday')">+ Adicionar Tarefa</button>
+            </div>
+
+            <!-- Quinta -->
+            <div class="day-card">
+                <h3>Quinta - 23/11</h3>
+                <div class="task-list" data-day="thursday">
+                    <div class="task-item">☐ Testes automatizados</div>
+                </div>
+                <button class="add-task-btn" onclick="addTask('thursday')">+ Adicionar Tarefa</button>
+            </div>
+
+            <!-- Sexta -->
+            <div class="day-card">
+                <h3>Sexta - 24/11</h3>
+                <div class="task-list" data-day="friday">
+                    <div class="task-item">☐ Deploy em produção</div>
+                    <div class="task-item">☐ Enviar relatório</div>
+                </div>
+                <button class="add-task-btn" onclick="addTask('friday')">+ Adicionar Tarefa</button>
+            </div>
+
+            <!-- Sábado -->
+            <div class="day-card">
+                <h3>Sábado - 25/11</h3>
+                <div class="task-list" data-day="saturday">
+                    <div class="task-item">☐ Almoçar com família</div>
+                </div>
+                <button class="add-task-btn" onclick="addTask('saturday')">+ Adicionar Tarefa</button>
+            </div>
+
+            <!-- Domingo -->
+            <div class="day-card">
+                <h3>Domingo - 26/11</h3>
+                <div class="task-list" data-day="sunday">
+                    <div class="task-item">☐ Preparar próxima semana</div>
+                </div>
+                <button class="add-task-btn" onclick="addTask('sunday')">+ Adicionar Tarefa</button>
+            </div>
+        </div>
+
+        <!-- Notas -->
+        <div class="notes-section">
+            <h2>📝 Notas da Semana</h2>
+            <textarea id="notes" placeholder="Escreva suas anotações aqui..."></textarea>
+            <button class="add-task-btn" onclick="saveNotes()" style="margin-top: 10px;">Salvar Notas</button>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="saveAll()">💾 Salvar Tudo</button>
+            <button class="btn-primary" onclick="exportData()" style="background: #28a745;">📤 Exportar</button>
+        </div>
+    </div>
+
+    <script>
+        // Funções JavaScript (iguais à versão anterior, mas adaptadas)
+        window.onload = loadSavedData;
+
+        function addTask(day) {
+            const taskText = prompt('Nova tarefa:');
+            if (taskText) {
+                const taskList = document.querySelector(`[data-day="${day}"]`);
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                taskItem.textContent = '☐ ' + taskText;
+                taskItem.onclick = function() {
+                    this.classList.toggle('completed');
+                };
+                taskList.appendChild(taskItem);
+            }
+        }
+
+        function addGoal() {
+            const goalText = prompt('Nova meta:');
+            if (goalText) {
+                const goalsSection = document.querySelector('.goals-section');
+                const goalItem = document.createElement('div');
+                goalItem.className = 'goal-item';
+                goalItem.textContent = '□ ' + goalText;
+                const addButton = goalsSection.querySelector('button');
+                goalsSection.insertBefore(goalItem, addButton);
+            }
+        }
+
+        function saveNotes() {
+            const notes = document.getElementById('notes').value;
+            localStorage.setItem('plannerNotes2025', notes);
+            alert('Notas salvas!');
+        }
+
+        function saveAll() {
+            const data = { tasks: {}, notes: document.getElementById('notes').value };
+            
+            document.querySelectorAll('.task-list').forEach(list => {
+                const day = list.dataset.day;
+                data.tasks[day] = [];
+                list.querySelectorAll('.task-item').forEach(task => {
+                    data.tasks[day].push({
+                        text: task.textContent,
+                        completed: task.classList.contains('completed')
+                    });
+                });
+            });
+            
+            localStorage.setItem('plannerData2025', JSON.stringify(data));
+            alert('✅ Tudo salvo com sucesso!');
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('plannerData2025');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('notes').value = data.notes || '';
+                
+                Object.keys(data.tasks).forEach(day => {
+                    const taskList = document.querySelector(`[data-day="${day}"]`);
+                    if (taskList && data.tasks[day].length > 0) {
+                        taskList.innerHTML = '';
+                        data.tasks[day].forEach(task => {
+                            const item = document.createElement('div');
+                            item.className = `task-item ${task.completed ? 'completed' : ''}`;
+                            item.textContent = task.text;
+                            item.onclick = () => item.classList.toggle('completed');
+                            taskList.appendChild(item);
+                        });
+                    }
+                });
+            }
+        }
+
+        function exportData() {
+            const data = localStorage.getItem('plannerData2025');
+            if (data) {
+                const blob = new Blob([data], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'planner-2025.json';
+                a.click();
+            }
+        }
+
+        // Auto-save a cada 30 segundos
+        setInterval(saveAll, 30000);
+    </script>
+</body>
+</html>
